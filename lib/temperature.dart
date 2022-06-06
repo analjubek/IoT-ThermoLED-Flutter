@@ -200,7 +200,7 @@ class _TemperatureState extends State<Temperature> {
   TimeOfDay startTime = TimeOfDay(hour: 15, minute: 00);
   TimeOfDay endTime = TimeOfDay(hour: 22, minute: 30);
 
-  ChartData chartData = new ChartData();
+  late ChartData chartData;
 
   @override
   Widget build(BuildContext context) {
@@ -210,8 +210,7 @@ class _TemperatureState extends State<Temperature> {
     final endHours = endTime.hour.toString().padLeft(2, '0');
     final endMinutes = endTime.minute.toString().padLeft(2, '0');
 
-    // s ovim se mogu podesavati boje, velicina itd
-    BezierChartConfig bezierConfig = BezierChartConfig();
+    chartData = new ChartData(context);
 
     return Scaffold(
       appBar: AppBar(
@@ -472,6 +471,7 @@ class _TemperatureState extends State<Temperature> {
                         bezierChartAggregation: BezierChartAggregation.AVERAGE,
                         fromDate: chartData.todayBegin,
                         toDate: chartData.todayEnd,
+                        config: chartData.bezierChartConfig,
                         series: [
                           BezierLine(
                               lineColor: Colors.black,
@@ -487,10 +487,11 @@ class _TemperatureState extends State<Temperature> {
                     height: 300,
                     padding: const EdgeInsets.all(5),
                     child: BezierChart(
-                        bezierChartScale: BezierChartScale.HOURLY,
+                        bezierChartScale: BezierChartScale.WEEKLY,
                         bezierChartAggregation: BezierChartAggregation.AVERAGE,
                         fromDate: chartData.weekBegin,
                         toDate: chartData.todayEnd,
+                        config: chartData.bezierChartConfig,
                         series: [
                           BezierLine(
                               lineColor: Colors.black,
