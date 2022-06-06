@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:bezier_chart/bezier_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:numberpicker/numberpicker.dart';
 import 'package:flutter_switch/flutter_switch.dart';
@@ -6,6 +7,8 @@ import 'dart:async';
 import 'package:day_picker/day_picker.dart';
 import 'package:http/http.dart' as http;
 import 'dart:io';
+
+import 'package:projekt/chartdata.dart';
 
 Future<TermostatModel> fetchTermostat() async {
   final response = await http.get(
@@ -197,6 +200,8 @@ class _TemperatureState extends State<Temperature> {
   TimeOfDay startTime = TimeOfDay(hour: 15, minute: 00);
   TimeOfDay endTime = TimeOfDay(hour: 22, minute: 30);
 
+  ChartData chartData = new ChartData();
+
   @override
   Widget build(BuildContext context) {
     final startHours = startTime.hour.toString().padLeft(2, '0');
@@ -204,6 +209,9 @@ class _TemperatureState extends State<Temperature> {
 
     final endHours = endTime.hour.toString().padLeft(2, '0');
     final endMinutes = endTime.minute.toString().padLeft(2, '0');
+
+    // s ovim se mogu podesavati boje, velicina itd
+    BezierChartConfig bezierConfig = BezierChartConfig();
 
     return Scaffold(
       appBar: AppBar(
@@ -459,43 +467,39 @@ class _TemperatureState extends State<Temperature> {
                     width: MediaQuery.of(context).size.width / 2,
                     height: 300,
                     padding: const EdgeInsets.all(5),
-                    child: Container(
-                      child: Text(
-                        "\nTemperatura\n24 sata",
-                        style: TextStyle(fontSize: 14),
-                        textAlign: TextAlign.center,
-                      ),
-                      decoration: new BoxDecoration(
-                        color: Colors.grey[200],
-                        borderRadius: new BorderRadius.only(
-                          topLeft: const Radius.circular(5),
-                          topRight: const Radius.circular(5),
-                          bottomLeft: const Radius.circular(5),
-                          bottomRight: const Radius.circular(5),
-                        ),
-                      ),
-                    ),
+                    child: BezierChart(
+                        bezierChartScale: BezierChartScale.HOURLY,
+                        bezierChartAggregation: BezierChartAggregation.AVERAGE,
+                        fromDate: chartData.todayBegin,
+                        toDate: chartData.todayEnd,
+                        series: [
+                          BezierLine(
+                              lineColor: Colors.black,
+                              dataPointFillColor: Colors.black,
+                              onMissingValue: (dateTime) {
+                                return 0.0;
+                              },
+                              data: chartData.todayTemp),
+                        ]),
                   ),
                   Container(
                     width: MediaQuery.of(context).size.width / 2,
                     height: 300,
                     padding: const EdgeInsets.all(5),
-                    child: Container(
-                      child: Text(
-                        "\nTemperatura\n7 dana",
-                        style: TextStyle(fontSize: 14),
-                        textAlign: TextAlign.center,
-                      ),
-                      decoration: new BoxDecoration(
-                        color: Colors.grey[200],
-                        borderRadius: new BorderRadius.only(
-                          topLeft: const Radius.circular(5),
-                          topRight: const Radius.circular(5),
-                          bottomLeft: const Radius.circular(5),
-                          bottomRight: const Radius.circular(5),
-                        ),
-                      ),
-                    ),
+                    child: BezierChart(
+                        bezierChartScale: BezierChartScale.HOURLY,
+                        bezierChartAggregation: BezierChartAggregation.AVERAGE,
+                        fromDate: chartData.weekBegin,
+                        toDate: chartData.todayEnd,
+                        series: [
+                          BezierLine(
+                              lineColor: Colors.black,
+                              dataPointFillColor: Colors.black,
+                              onMissingValue: (dateTime) {
+                                return 0.0;
+                              },
+                              data: chartData.weeklyTemp),
+                        ]),
                   ),
                 ],
               ),
