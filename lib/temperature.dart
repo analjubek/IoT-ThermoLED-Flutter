@@ -1,11 +1,145 @@
+import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:numberpicker/numberpicker.dart';
 import 'package:flutter_switch/flutter_switch.dart';
 import 'dart:async';
 import 'package:day_picker/day_picker.dart';
-import 'package:date_format/date_format.dart';
-import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
+import 'package:http/http.dart' as http;
+import 'dart:io';
+
+Future<TermostatModel> fetchTermostat() async {
+  final response = await http.get(
+    Uri.parse('https://jsonplaceholder.typicode.com/albums/1'),
+
+    //autentifikacija
+    headers: {
+      HttpHeaders.authorizationHeader: 'Basic your_api_token_here',
+    },
+  );
+
+  if (response.statusCode == 200) {
+    // If the server did return a 200 OK response,
+    // then parse the JSON.
+    return TermostatModel.fromJson(jsonDecode(response.body));
+  } else {
+    // If the server did not return a 200 OK response,
+    // then throw an exception.
+    throw Exception('Failed to load termostat');
+  }
+}
+
+// RADI --> paljenje/gasenje lampe - TESTIRANO
+void postIllumination() async {
+  var uname = 'fkozjak@yahoo.com';
+  var pword = 'Iotprojekt2022';
+  var authn = 'Basic ' + base64Encode(utf8.encode('$uname:$pword'));
+
+  var headers = {
+    'Content-Type': 'text/plain',
+    'Accept': 'application/json',
+    'Authorization': authn,
+  };
+
+  var data = 'ON';
+
+  var url = Uri.parse('https://home.myopenhab.org/rest/items/Huego1_Color');
+  var res = await http.post(url, headers: headers, body: data);
+  if (res.statusCode != 200)
+    throw Exception('http.post error: statusCode= ${res.statusCode}');
+  print(res.body);
+}
+
+class IlluminationModel {
+  String? link;
+  String? state;
+  bool? editable;
+  String? type;
+  String? name;
+  String? label;
+  String? category;
+  List<String>? tags;
+  List<String>? groupNames;
+
+  IlluminationModel(
+      {this.link,
+      this.state,
+      this.editable,
+      this.type,
+      this.name,
+      this.label,
+      this.category,
+      this.tags,
+      this.groupNames});
+
+  IlluminationModel.fromJson(Map<String, dynamic> json) {
+    link = json['link'];
+    state = json['state'];
+    editable = json['editable'];
+    type = json['type'];
+    name = json['name'];
+    label = json['label'];
+    category = json['category'];
+    tags = json['tags'].cast<String>();
+    groupNames = json['groupNames'].cast<String>();
+  }
+
+  Map<String, dynamic> toJson() {
+    final Map<String, dynamic> data = new Map<String, dynamic>();
+    data['link'] = this.link;
+    data['state'] = this.state;
+    data['editable'] = this.editable;
+    data['type'] = this.type;
+    data['name'] = this.name;
+    data['label'] = this.label;
+    data['category'] = this.category;
+    data['tags'] = this.tags;
+    data['groupNames'] = this.groupNames;
+    return data;
+  }
+}
+
+/*
+Future<TermostatModel> changeTermostat(String title) async {
+  final response = await http.post(
+    Uri.parse('https://jsonplaceholder.typicode.com/albums'),
+    headers: <String, String>{
+      'Content-Type': 'application/json; charset=UTF-8',
+    },
+    body: jsonEncode(<String, String>{
+      'title': title,
+    }),
+  );
+
+  if (response.statusCode == 201) {
+    // If the server did return a 201 CREATED response,
+    // then parse the JSON.
+    return TermostatModel.fromJson(jsonDecode(response.body));
+  } else {
+    // If the server did not return a 201 CREATED response,
+    // then throw an exception.
+    throw Exception('Failed to change termostat.');
+  }
+}*/
+
+class TermostatModel {
+  final int userId;
+  final int id;
+  final String title;
+
+  const TermostatModel({
+    required this.userId,
+    required this.id,
+    required this.title,
+  });
+
+  factory TermostatModel.fromJson(Map<String, dynamic> json) {
+    return TermostatModel(
+      userId: json['userId'],
+      id: json['id'],
+      title: json['title'],
+    );
+  }
+}
 
 class Temperature extends StatefulWidget {
   @override
@@ -13,6 +147,14 @@ class Temperature extends StatefulWidget {
 }
 
 class _TemperatureState extends State<Temperature> {
+  late Future<TermostatModel> futureTermostat;
+
+  @override
+  void initState() {
+    super.initState();
+    futureTermostat = fetchTermostat();
+  }
+
   bool termostatStatus = true;
 
   int _currentTemperature = 20;
@@ -52,8 +194,8 @@ class _TemperatureState extends State<Temperature> {
     ),
   ];
 
-  TimeOfDay startTime = TimeOfDay(hour: 10, minute: 30);
-  TimeOfDay endTime = TimeOfDay(hour: 11, minute: 30);
+  TimeOfDay startTime = TimeOfDay(hour: 15, minute: 00);
+  TimeOfDay endTime = TimeOfDay(hour: 22, minute: 30);
 
   @override
   Widget build(BuildContext context) {
@@ -73,6 +215,18 @@ class _TemperatureState extends State<Temperature> {
           child: Column(
             //mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: <Widget>[
+              /*ElevatedButton(
+                style: ButtonStyle(
+                  backgroundColor: MaterialStateProperty.all(Colors.grey[100]),
+                ),
+                child: Text(
+                  'Click button',
+                  style: TextStyle(fontSize: 32, color: Colors.blue),
+                ),
+                onPressed: () {
+                  getUserData();
+                },
+              ),*/
               Container(
                 padding: const EdgeInsets.all(20),
                 child: Column(
@@ -88,7 +242,23 @@ class _TemperatureState extends State<Temperature> {
                     ),
                     Container(
                       padding: const EdgeInsets.all(5),
-                      child: Text(
+                      child: /*FutureBuilder<TermostatModel>(
+                        future: futureTermostat,
+                        builder: (context, snapshot) {
+                          if (snapshot.hasData) {
+                            return Text(
+                              "${snapshot.data!.id}°C",
+                              style: TextStyle(fontSize: 40),
+                              textAlign: TextAlign.center,
+                            );
+                          } else if (snapshot.hasError) {
+                            return Text('${snapshot.error}');
+                          }
+                          // By default, show a loading spinner.
+                          return const CircularProgressIndicator();
+                        },
+                      ),*/
+                          Text(
                         "27°C",
                         style: TextStyle(fontSize: 50),
                         textAlign: TextAlign.center,
@@ -118,6 +288,7 @@ class _TemperatureState extends State<Temperature> {
                       value: termostatStatus,
                       //padding: 8.0,
                       onToggle: (val) {
+                        postIllumination();
                         setState(() {
                           termostatStatus = val;
                         });
