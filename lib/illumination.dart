@@ -263,100 +263,56 @@ class _IlluminationState extends State<Illumination> {
                     ),
                   ],
                 ),
-              if (illuminationStatus)
-                Row(
-                  children: <Widget>[
-                    Container(
-                      width: MediaQuery.of(context).size.width / 2,
-                      height: 300,
-                      padding: const EdgeInsets.all(5),
-                      child: Container(
-                        child: Text(
-                          "\nBoja osvjetljenja\n24 sata",
-                          style: TextStyle(fontSize: 14),
-                          textAlign: TextAlign.center,
-                        ),
-                        decoration: new BoxDecoration(
-                          color: Colors.grey[200],
-                          borderRadius: new BorderRadius.only(
-                            topLeft: const Radius.circular(5),
-                            topRight: const Radius.circular(5),
-                            bottomLeft: const Radius.circular(5),
-                            bottomRight: const Radius.circular(5),
-                          ),
-                        ),
-                      ),
-                    ),
-                    Container(
-                      width: MediaQuery.of(context).size.width / 2,
-                      height: 300,
-                      padding: const EdgeInsets.all(5),
-                      child: Container(
-                        child: BezierChart(
-                            bezierChartScale: BezierChartScale.HOURLY,
-                            bezierChartAggregation: BezierChartAggregation.AVERAGE,
-                            fromDate: chartData.todayBegin,
-                            toDate: chartData.todayEnd,
-                            config: chartData.bezierChartConfig,
-                            series: [
-                              BezierLine(
-                                  lineColor: Colors.black,
-                                  dataPointFillColor: Colors.black,
-                                  onMissingValue: (dateTime) {
-                                    return 0.0;
-                                  },
-                                  data: chartData.todayLight),
-                            ])
-                      ),
-                    ),
-                  ],
+              Container(
+                height: 10,
+              ),
+              Text("Razina osvjetljenja posljednja 24 sata"),
+              Container(
+                width: MediaQuery.of(context).size.width - 20,
+                height: 300,
+                padding: const EdgeInsets.all(5),
+                child: Container(
+                    child: BezierChart(
+                        bezierChartScale: BezierChartScale.HOURLY,
+                        bezierChartAggregation: BezierChartAggregation.AVERAGE,
+                        fromDate: chartData.todayBegin,
+                        toDate: chartData.todayEnd,
+                        config: chartData.bezierChartConfig,
+                        series: [
+                      BezierLine(
+                          lineColor: Colors.black,
+                          dataPointFillColor: Colors.black,
+                          onMissingValue: (dateTime) {
+                            return 0.0;
+                          },
+                          data: chartData.todayLight),
+                    ])),
+              ),
+              Container(
+                height: 10,
+              ),
+              Text("Razina osvjetljenja posljednjih 7 dana"),
+              Container(
+                width: MediaQuery.of(context).size.width - 20,
+                height: 300,
+                padding: const EdgeInsets.all(5),
+                child: Container(
+                  child: BezierChart(
+                      bezierChartScale: BezierChartScale.WEEKLY,
+                      bezierChartAggregation: BezierChartAggregation.AVERAGE,
+                      fromDate: chartData.weekBegin,
+                      toDate: chartData.todayEnd,
+                      config: chartData.bezierChartConfig,
+                      series: [
+                        BezierLine(
+                            lineColor: Colors.black,
+                            dataPointFillColor: Colors.black,
+                            onMissingValue: (dateTime) {
+                              return 0.0;
+                            },
+                            data: chartData.weeklyLight),
+                      ]),
                 ),
-              Row(
-                children: <Widget>[
-                  Container(
-                    width: MediaQuery.of(context).size.width / 2,
-                    height: 300,
-                    padding: const EdgeInsets.all(5),
-                    child: Container(
-                      child: Text(
-                        "\nBoja osvjetljenja\n7 dana",
-                        style: TextStyle(fontSize: 14),
-                        textAlign: TextAlign.center,
-                      ),
-                      decoration: new BoxDecoration(
-                        color: Colors.grey[200],
-                        borderRadius: new BorderRadius.only(
-                          topLeft: const Radius.circular(5),
-                          topRight: const Radius.circular(5),
-                          bottomLeft: const Radius.circular(5),
-                          bottomRight: const Radius.circular(5),
-                        ),
-                      ),
-                    ),
-                  ),
-                  Container(
-                    width: MediaQuery.of(context).size.width / 2,
-                    height: 300,
-                    padding: const EdgeInsets.all(5),
-                    child: Container(
-                      child: BezierChart(
-                          bezierChartScale: BezierChartScale.WEEKLY,
-                          bezierChartAggregation: BezierChartAggregation.AVERAGE,
-                          fromDate: chartData.weekBegin,
-                          toDate: chartData.todayEnd,
-                          config: chartData.bezierChartConfig,
-                          series: [
-                            BezierLine(
-                                lineColor: Colors.black,
-                                dataPointFillColor: Colors.black,
-                                onMissingValue: (dateTime) {
-                                  return 0.0;
-                                },
-                                data: chartData.weeklyLight),
-                          ]),
-                    ),
-                  ),
-                ],
               ),
             ],
           ),
