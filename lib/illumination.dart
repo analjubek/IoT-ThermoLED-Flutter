@@ -1,9 +1,12 @@
+import 'package:bezier_chart/bezier_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_switch/flutter_switch.dart';
 import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 import 'package:http/http.dart' as http;
+
+import 'chartdata.dart';
 
 Future<IlluminationModel> fetchIllumination() async {
   final response = await http.get(
@@ -131,6 +134,8 @@ class _IlluminationState extends State<Illumination> {
 
   late Future<IlluminationModel> futureIllumination;
 
+  late ChartData chartData;
+
   @override
   void initState() {
     super.initState();
@@ -139,6 +144,8 @@ class _IlluminationState extends State<Illumination> {
 
   @override
   Widget build(BuildContext context) {
+    chartData = new ChartData(context);
+
     return Scaffold(
       appBar: AppBar(
           title: const Text('Osvjetljenje'),
@@ -285,20 +292,21 @@ class _IlluminationState extends State<Illumination> {
                       height: 300,
                       padding: const EdgeInsets.all(5),
                       child: Container(
-                        child: Text(
-                          "\nRazina osvjetljenja\n24 sata",
-                          style: TextStyle(fontSize: 14),
-                          textAlign: TextAlign.center,
-                        ),
-                        decoration: new BoxDecoration(
-                          color: Colors.grey[200],
-                          borderRadius: new BorderRadius.only(
-                            topLeft: const Radius.circular(5),
-                            topRight: const Radius.circular(5),
-                            bottomLeft: const Radius.circular(5),
-                            bottomRight: const Radius.circular(5),
-                          ),
-                        ),
+                        child: BezierChart(
+                            bezierChartScale: BezierChartScale.HOURLY,
+                            bezierChartAggregation: BezierChartAggregation.AVERAGE,
+                            fromDate: chartData.todayBegin,
+                            toDate: chartData.todayEnd,
+                            config: chartData.bezierChartConfig,
+                            series: [
+                              BezierLine(
+                                  lineColor: Colors.black,
+                                  dataPointFillColor: Colors.black,
+                                  onMissingValue: (dateTime) {
+                                    return 0.0;
+                                  },
+                                  data: chartData.todayLight),
+                            ])
                       ),
                     ),
                   ],
@@ -331,20 +339,21 @@ class _IlluminationState extends State<Illumination> {
                     height: 300,
                     padding: const EdgeInsets.all(5),
                     child: Container(
-                      child: Text(
-                        "\nRazina osvjetljenja\n7 dana",
-                        style: TextStyle(fontSize: 14),
-                        textAlign: TextAlign.center,
-                      ),
-                      decoration: new BoxDecoration(
-                        color: Colors.grey[200],
-                        borderRadius: new BorderRadius.only(
-                          topLeft: const Radius.circular(5),
-                          topRight: const Radius.circular(5),
-                          bottomLeft: const Radius.circular(5),
-                          bottomRight: const Radius.circular(5),
-                        ),
-                      ),
+                      child: BezierChart(
+                          bezierChartScale: BezierChartScale.WEEKLY,
+                          bezierChartAggregation: BezierChartAggregation.AVERAGE,
+                          fromDate: chartData.weekBegin,
+                          toDate: chartData.todayEnd,
+                          config: chartData.bezierChartConfig,
+                          series: [
+                            BezierLine(
+                                lineColor: Colors.black,
+                                dataPointFillColor: Colors.black,
+                                onMissingValue: (dateTime) {
+                                  return 0.0;
+                                },
+                                data: chartData.weeklyLight),
+                          ]),
                     ),
                   ),
                 ],

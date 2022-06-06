@@ -1,5 +1,3 @@
-import 'dart:js';
-
 import 'package:bezier_chart/bezier_chart.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -67,6 +65,7 @@ class ChartData {
         showVerticalIndicator: true,
         verticalIndicatorFixedPosition: true,
         snap: false,
+        backgroundColor: Colors.grey[200],
         bubbleIndicatorColor: Colors.blue,
         bubbleIndicatorValueFormat: NumberFormat("#####", "en_US"),
         bubbleIndicatorValueStyle: TextStyle(color: Colors.blue, fontSize: 15.0),
