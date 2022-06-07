@@ -328,49 +328,50 @@ class _TemperatureState extends State<Temperature> {
               Container(
                 height: 20,
               ),
-              Row(
-                children: <Widget>[
-                  Container(
-                    width: MediaQuery.of(context).size.width / 2,
-                    height: 300,
-                    padding: const EdgeInsets.all(5),
-                    child: BezierChart(
-                        bezierChartScale: BezierChartScale.HOURLY,
-                        bezierChartAggregation: BezierChartAggregation.AVERAGE,
-                        fromDate: chartData.todayBegin,
-                        toDate: chartData.todayEnd,
-                        config: chartData.bezierChartConfig,
-                        series: [
-                          BezierLine(
-                              lineColor: Colors.black,
-                              dataPointFillColor: Colors.black,
-                              onMissingValue: (dateTime) {
-                                return 0.0;
-                              },
-                              data: chartData.todayTemp),
-                        ]),
-                  ),
-                  Container(
-                    width: MediaQuery.of(context).size.width / 2,
-                    height: 300,
-                    padding: const EdgeInsets.all(5),
-                    child: BezierChart(
-                        bezierChartScale: BezierChartScale.WEEKLY,
-                        bezierChartAggregation: BezierChartAggregation.AVERAGE,
-                        fromDate: chartData.weekBegin,
-                        toDate: chartData.todayEnd,
-                        config: chartData.bezierChartConfig,
-                        series: [
-                          BezierLine(
-                              lineColor: Colors.black,
-                              dataPointFillColor: Colors.black,
-                              onMissingValue: (dateTime) {
-                                return 0.0;
-                              },
-                              data: chartData.weeklyTemp),
-                        ]),
-                  ),
-                ],
+              Text("Temperatura posljednja 24 sata"),
+              Container(
+                width: MediaQuery.of(context).size.width - 20,
+                height: 300,
+                padding: const EdgeInsets.all(5),
+                child: BezierChart(
+                    bezierChartScale: BezierChartScale.HOURLY,
+                    bezierChartAggregation: BezierChartAggregation.AVERAGE,
+                    fromDate: chartData.todayBegin,
+                    toDate: chartData.todayEnd,
+                    config: chartData.bezierChartConfig,
+                    series: [
+                      BezierLine(
+                          lineColor: Colors.black,
+                          dataPointFillColor: Colors.black,
+                          onMissingValue: (dateTime) {
+                            return 0.0;
+                          },
+                          data: chartData.todayTemp),
+                    ]),
+              ),
+              Container(
+                height: 10,
+              ),
+              Text("Temperatura posljednjih 7 dana"),
+              Container(
+                width: MediaQuery.of(context).size.width - 20,
+                height: 300,
+                padding: const EdgeInsets.all(5),
+                child: BezierChart(
+                    bezierChartScale: BezierChartScale.WEEKLY,
+                    bezierChartAggregation: BezierChartAggregation.AVERAGE,
+                    fromDate: chartData.weekBegin,
+                    toDate: chartData.todayEnd,
+                    config: chartData.bezierChartConfig,
+                    series: [
+                      BezierLine(
+                          lineColor: Colors.black,
+                          dataPointFillColor: Colors.black,
+                          onMissingValue: (dateTime) {
+                            return 0.0;
+                          },
+                          data: chartData.weeklyTemp),
+                    ]),
               ),
             ],
           ),
