@@ -1,128 +1,13 @@
+import 'dart:async';
+
 import 'package:bezier_chart/bezier_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_switch/flutter_switch.dart';
-import 'dart:async';
-import 'dart:convert';
-import 'dart:io';
-import 'package:http/http.dart' as http;
+import 'package:projekt/openhab_controller.dart';
+import 'package:projekt/temperature.dart';
 
 import 'chartdata.dart';
-
-Future<IlluminationModel> fetchIllumination() async {
-  final response = await http.get(
-    Uri.parse('home.myopenhab.org'),
-
-    //autentifikacija
-    headers: {
-      HttpHeaders.authorizationHeader: 'Basic your_api_token_here',
-    },
-  );
-
-  if (response.statusCode == 200) {
-    // If the server did return a 200 OK response,
-    // then parse the JSON.
-    return IlluminationModel.fromJson(jsonDecode(response.body));
-  } else {
-    // If the server did not return a 200 OK response,
-    // then throw an exception.
-    throw Exception('Failed to load illumination');
-  }
-}
-
-// trebalo bi raditi (nije testirano)
-void postIllumination() async {
-  var uname = 'fkozjak@yahoo.com';
-  var pword = 'Iotprojekt2022';
-  var authn = 'Basic ' + base64Encode(utf8.encode('$uname:$pword'));
-
-  var headers = {
-    'Content-Type': 'text/plain',
-    'Accept': 'application/json',
-    'Authorization': authn,
-  };
-
-  var data = 'ON';
-
-  var url = Uri.parse('https://home.myopenhab.org/rest/items/Huego1_Color');
-  var res = await http.post(url, headers: headers, body: data);
-  if (res.statusCode != 200)
-    throw Exception('http.post error: statusCode= ${res.statusCode}');
-  print(res.body);
-}
-
-// ne radi (jos)
-/*Future<IlluminationModel> postIllumination() async {
-  final response = await http.post(
-    Uri.parse('https://home.myopenhab.org/rest/items/Huego1_Color'),
-    headers: <String, String>{
-      'Content-Type': 'text/plain',
-      'Accept': "application/json"
-    },
-    body: jsonEncode(<String, String>{
-      'd': "ON",
-      'u': "fkozjak@yahoo.com:Iotprojekt2022",
-    }),
-  );
-
-  if (response.statusCode == 201) {
-    // If the server did return a 201 CREATED response,
-    // then parse the JSON.
-    return IlluminationModel.fromJson(jsonDecode(response.body));
-  } else {
-    // If the server did not return a 201 CREATED response,
-    // then throw an exception.
-    throw Exception('Failed to change illumination.');
-  }
-}*/
-
-class IlluminationModel {
-  String? link;
-  String? state;
-  bool? editable;
-  String? type;
-  String? name;
-  String? label;
-  String? category;
-  List<String>? tags;
-  List<String>? groupNames;
-
-  IlluminationModel(
-      {this.link,
-      this.state,
-      this.editable,
-      this.type,
-      this.name,
-      this.label,
-      this.category,
-      this.tags,
-      this.groupNames});
-
-  IlluminationModel.fromJson(Map<String, dynamic> json) {
-    link = json['link'];
-    state = json['state'];
-    editable = json['editable'];
-    type = json['type'];
-    name = json['name'];
-    label = json['label'];
-    category = json['category'];
-    tags = json['tags'].cast<String>();
-    groupNames = json['groupNames'].cast<String>();
-  }
-
-  Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
-    data['link'] = this.link;
-    data['state'] = this.state;
-    data['editable'] = this.editable;
-    data['type'] = this.type;
-    data['name'] = this.name;
-    data['label'] = this.label;
-    data['category'] = this.category;
-    data['tags'] = this.tags;
-    data['groupNames'] = this.groupNames;
-    return data;
-  }
-}
+import 'models.dart';
 
 class Illumination extends StatefulWidget {
   @override
@@ -136,10 +21,13 @@ class _IlluminationState extends State<Illumination> {
 
   late ChartData chartData;
 
+  late OpenHABController openHABController;
+
   @override
   void initState() {
     super.initState();
-    futureIllumination = fetchIllumination();
+    openHABController = OpenHABController();
+    futureIllumination = openHABController.fetchIllumination();
   }
 
   @override
@@ -181,7 +69,7 @@ class _IlluminationState extends State<Illumination> {
                       value: illuminationStatus,
                       //padding: 8.0,
                       onToggle: (val) {
-                        postIllumination();
+                        openHABController.postIllumination();
                         setState(() {
                           illuminationStatus = val;
                         });
@@ -292,22 +180,22 @@ class _IlluminationState extends State<Illumination> {
                       height: 300,
                       padding: const EdgeInsets.all(5),
                       child: Container(
-                        child: BezierChart(
-                            bezierChartScale: BezierChartScale.HOURLY,
-                            bezierChartAggregation: BezierChartAggregation.AVERAGE,
-                            fromDate: chartData.todayBegin,
-                            toDate: chartData.todayEnd,
-                            config: chartData.bezierChartConfig,
-                            series: [
-                              BezierLine(
-                                  lineColor: Colors.black,
-                                  dataPointFillColor: Colors.black,
-                                  onMissingValue: (dateTime) {
-                                    return 0.0;
-                                  },
-                                  data: chartData.todayLight),
-                            ])
-                      ),
+                          child: BezierChart(
+                              bezierChartScale: BezierChartScale.HOURLY,
+                              bezierChartAggregation:
+                                  BezierChartAggregation.AVERAGE,
+                              fromDate: chartData.todayBegin,
+                              toDate: chartData.todayEnd,
+                              config: chartData.bezierChartConfig,
+                              series: [
+                            BezierLine(
+                                lineColor: Colors.black,
+                                dataPointFillColor: Colors.black,
+                                onMissingValue: (dateTime) {
+                                  return 0.0;
+                                },
+                                data: chartData.todayLight),
+                          ])),
                     ),
                   ],
                 ),
@@ -341,7 +229,8 @@ class _IlluminationState extends State<Illumination> {
                     child: Container(
                       child: BezierChart(
                           bezierChartScale: BezierChartScale.WEEKLY,
-                          bezierChartAggregation: BezierChartAggregation.AVERAGE,
+                          bezierChartAggregation:
+                              BezierChartAggregation.AVERAGE,
                           fromDate: chartData.weekBegin,
                           toDate: chartData.todayEnd,
                           config: chartData.bezierChartConfig,
