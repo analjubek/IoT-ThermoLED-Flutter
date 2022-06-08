@@ -4,10 +4,8 @@ import 'package:bezier_chart/bezier_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_switch/flutter_switch.dart';
 import 'package:projekt/openhab_controller.dart';
-import 'package:projekt/temperature.dart';
 
 import 'chartdata.dart';
-import 'models.dart';
 
 class Illumination extends StatefulWidget {
   @override
@@ -17,9 +15,7 @@ class Illumination extends StatefulWidget {
 class _IlluminationState extends State<Illumination> {
   bool illuminationStatus = true;
 
-  late Future<IlluminationModel> futureIllumination;
-
-  late ChartData chartData;
+  late Future<dynamic> isLoaded;
 
   late OpenHABController openHABController;
 
@@ -27,14 +23,12 @@ class _IlluminationState extends State<Illumination> {
   void initState() {
     super.initState();
     openHABController = OpenHABController();
-    // futureIllumination = openHABController.fetchIllumination();
     openHABController.fetchColor();
+    isLoaded = openHABController.fetchIllumination();
   }
 
   @override
   Widget build(BuildContext context) {
-    chartData = new ChartData(context);
-
     return Scaffold(
       appBar: AppBar(
           title: const Text('Osvjetljenje'),
@@ -70,7 +64,7 @@ class _IlluminationState extends State<Illumination> {
                       value: illuminationStatus,
                       //padding: 8.0,
                       onToggle: (val) {
-                        openHABController.postIllumination();
+                        openHABController.toggleLamp(val);
                         setState(() {
                           illuminationStatus = val;
                         });
@@ -157,26 +151,34 @@ class _IlluminationState extends State<Illumination> {
               ),
               Text("Razina osvjetljenja posljednja 24 sata"),
               Container(
-                width: MediaQuery.of(context).size.width - 20,
-                height: 300,
-                padding: const EdgeInsets.all(5),
-                child: Container(
-                    child: BezierChart(
-                        bezierChartScale: BezierChartScale.HOURLY,
-                        bezierChartAggregation: BezierChartAggregation.AVERAGE,
-                        fromDate: chartData.todayBegin,
-                        toDate: chartData.todayEnd,
-                        config: chartData.bezierChartConfig,
-                        series: [
-                      BezierLine(
-                          lineColor: Colors.black,
-                          dataPointFillColor: Colors.black,
-                          onMissingValue: (dateTime) {
-                            return 0.0;
-                          },
-                          data: chartData.todayLight),
-                    ])),
-              ),
+                  width: MediaQuery.of(context).size.width - 20,
+                  height: 300,
+                  padding: const EdgeInsets.all(5),
+                  child: FutureBuilder(
+                      future: isLoaded,
+                      builder: (context, snapshot) {
+                        if (snapshot.connectionState == ConnectionState.none &&
+                            snapshot.hasData) {
+                          return Container();
+                        }
+                        var chartData = openHABController.chartData;
+                        return BezierChart(
+                            bezierChartScale: BezierChartScale.HOURLY,
+                            bezierChartAggregation:
+                                BezierChartAggregation.AVERAGE,
+                            fromDate: chartData.todayBegin,
+                            toDate: chartData.todayEnd,
+                            config: chartData.getBezierChartConfig(context),
+                            series: [
+                              BezierLine(
+                                  lineColor: Colors.black,
+                                  dataPointFillColor: Colors.black,
+                                  onMissingValue: (dateTime) {
+                                    return 0.0;
+                                  },
+                                  data: chartData.todayLight),
+                            ]);
+                      })),
               Container(
                 height: 10,
               ),
@@ -185,22 +187,30 @@ class _IlluminationState extends State<Illumination> {
                 width: MediaQuery.of(context).size.width - 20,
                 height: 300,
                 padding: const EdgeInsets.all(5),
-                child: Container(
-                  child: BezierChart(
-                      bezierChartScale: BezierChartScale.WEEKLY,
-                      bezierChartAggregation: BezierChartAggregation.AVERAGE,
-                      fromDate: chartData.weekBegin,
-                      toDate: chartData.todayEnd,
-                      config: chartData.bezierChartConfig,
-                      series: [
-                        BezierLine(
-                            lineColor: Colors.black,
-                            dataPointFillColor: Colors.black,
-                            onMissingValue: (dateTime) {
-                              return 0.0;
-                            },
-                            data: chartData.weeklyLight),
-                      ]),
+                child: FutureBuilder(
+                  future: isLoaded,
+                  builder: (context, snapshot) {
+                    if (snapshot.connectionState == ConnectionState.none &&
+                        snapshot.hasData) {
+                      return Container();
+                    }
+                    var chartData = openHABController.chartData;
+                    return BezierChart(
+                        bezierChartScale: BezierChartScale.WEEKLY,
+                        bezierChartAggregation: BezierChartAggregation.AVERAGE,
+                        fromDate: chartData.weekBegin,
+                        toDate: chartData.todayEnd,
+                        config: chartData.getBezierChartConfig(context),
+                        series: [
+                          BezierLine(
+                              lineColor: Colors.black,
+                              dataPointFillColor: Colors.black,
+                              onMissingValue: (dateTime) {
+                                return 0.0;
+                              },
+                              data: chartData.weeklyLight),
+                        ]);
+                  },
                 ),
               ),
               Container(

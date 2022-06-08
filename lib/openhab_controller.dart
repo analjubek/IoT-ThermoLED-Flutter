@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:io';
 import 'package:html/parser.dart';
 import 'package:http/http.dart' as http;
+import 'package:projekt/chartdata.dart';
 
 import 'models.dart';
 
@@ -15,7 +16,9 @@ class OpenHABController {
 
   late String _items;
   late String _lamp;
-  late String _color;
+  late String _temperature;
+  late String _brightness;
+  late ChartData chartData;
 
   factory OpenHABController() {
     return _openHABController;
@@ -24,49 +27,50 @@ class OpenHABController {
   OpenHABController._internal() {
     _items = "${baseUrl}items/";
     _lamp = "${_items}Huego1_Color";
-    _color = "${_items}Huego1_Color";
+    _temperature = "${_items}TemperatureSensor_TemperatureSensor";
+    _brightness = "${_items}BrightnessSensor_BrightnessValue";
   }
 
-  // radi
-  void postIllumination() async {
+  void toggleLamp(bool turnOn) async {
     Map<String, String> headers = _getPostHeaders();
 
-    var data = 'ON';
+    var data = turnOn ? 'ON' : 'OFF';
 
     var url = Uri.parse(_lamp);
     var res = await http.post(url, headers: headers, body: data);
     if (res.statusCode != 200) {
+      print(res);
       throw Exception('http.post error: statusCode= ${res.statusCode}');
     }
     print(res.body);
   }
 
-  // provjerit
-  Future<IlluminationModel> fetchIllumination() async {
-    var url = Uri.parse(baseUrl);
+  Future<dynamic> fetchIllumination() async {
+    var url = Uri.parse(_brightness);
     var headers = _getGetHeaders();
     final response = await http.get(url, headers: headers);
 
     if (response.statusCode == 200) {
-      return IlluminationModel.fromJson(jsonDecode(response.body));
+      print(response);
+      var illumination = IlluminationModel.fromJson(jsonDecode(response.body));
+      chartData = ChartData.chartDataWithLight(illumination);
+      return Future.value(true);
     } else {
+      print(response);
       throw Exception('Failed to load illumination');
     }
   }
 
-  Future<String> fetchColor() async {
+  Future<LampColor> fetchColor() async {
     var url = Uri.parse(_lamp);
     var headers = _getGetHeaders();
     final response = await http.get(url, headers: headers);
 
     if (response.statusCode == 200) {
-      var document = parse(response.body);
-      var metas = document.getElementsByTagName("meta");
-      print(response.body);
-      print(document);
-      print(metas);
-      return "";
+      print(response);
+      return LampColor.fromJson(jsonDecode(response.body));
     } else {
+      print(response);
       throw Exception('Failed to fetch illumination color.');
     }
   }
@@ -92,24 +96,19 @@ class OpenHABController {
   }
 
   // promijenit
-  Future<TermostatModel> fetchTermostat() async {
-    final response = await http.get(
-      Uri.parse('https://jsonplaceholder.typicode.com/albums/1'),
-
-      //autentifikacija
-      headers: {
-        HttpHeaders.authorizationHeader: 'Basic your_api_token_here',
-      },
-    );
+  Future<dynamic> fetchTermostat() async {
+    var url = Uri.parse(_temperature);
+    var headers = _getGetHeaders();
+    final response = await http.get(url, headers: headers);
 
     if (response.statusCode == 200) {
-      // If the server did return a 200 OK response,
-      // then parse the JSON.
-      return TermostatModel.fromJson(jsonDecode(response.body));
+      print(response);
+      var temperature = TermostatModel.fromJson(jsonDecode(response.body));
+      chartData = ChartData.chartDataWithTemp(temperature);
+      return Future.value(true);
     } else {
-      // If the server did not return a 200 OK response,
-      // then throw an exception.
-      throw Exception('Failed to load termostat');
+      print(response);
+      throw Exception('Failed to load illumination');
     }
   }
 

@@ -1,4 +1,3 @@
-
 class IlluminationModel {
   String? link;
   String? state;
@@ -10,16 +9,15 @@ class IlluminationModel {
   List<String>? tags;
   List<String>? groupNames;
 
-  IlluminationModel(
-      {this.link,
-        this.state,
-        this.editable,
-        this.type,
-        this.name,
-        this.label,
-        this.category,
-        this.tags,
-        this.groupNames});
+  IlluminationModel({this.link,
+    this.state,
+    this.editable,
+    this.type,
+    this.name,
+    this.label,
+    this.category,
+    this.tags,
+    this.groupNames});
 
   IlluminationModel.fromJson(Map<String, dynamic> json) {
     link = json['link'];
@@ -65,6 +63,24 @@ class TermostatModel {
       userId: json['userId'],
       id: json['id'],
       title: json['title'],
+    );
+  }
+}
+
+class LampColor {
+  final int r;
+  final int g;
+  final int b;
+
+
+  LampColor({ required this.r, required this.g, required this.b});
+
+  factory LampColor.fromJson(Map<String, dynamic> json) {
+    String state = json['state'];
+    return LampColor(
+      r: int.parse(state.split(',')[0]),
+      g: int.parse(state.split(',')[1]),
+      b: int.parse(state.split(',')[2]),
     );
   }
 }

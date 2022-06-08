@@ -1,9 +1,13 @@
 import 'package:bezier_chart/bezier_chart.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
+
+import 'models.dart';
 
 class ChartData {
+  double currentLight = 90;
+  double currentTemp = 25.0;
+
   List<DataPoint<DateTime>> todayLight = [];
   List<DataPoint<DateTime>> todayTemp = [];
 
@@ -14,9 +18,15 @@ class ChartData {
   DateTime weekBegin = DateTime.now().subtract(Duration(days: 7));
   DateTime todayEnd = DateTime.now();
 
-  late BezierChartConfig bezierChartConfig;
+  ChartData.chartDataWithTemp(TermostatModel termostatModel) {
+    ChartData();
+  }
 
-  ChartData(BuildContext context) {
+  ChartData.chartDataWithLight(IlluminationModel illuminationModel) {
+    ChartData();
+  }
+
+  ChartData() {
     todayLight.add(new DataPoint(
         value: 60.0, xAxis: todayBegin.add(Duration(minutes: 30))));
     todayLight.add(new DataPoint(
@@ -92,8 +102,10 @@ class ChartData {
         new DataPoint(value: 81.0, xAxis: todayBegin.add(Duration(hours: 96))));
     weeklyLight.add(new DataPoint(
         value: 74.0, xAxis: todayBegin.add(Duration(hours: 108))));
+  }
 
-    bezierChartConfig = BezierChartConfig(
+  BezierChartConfig getBezierChartConfig(BuildContext context) {
+    return BezierChartConfig(
         contentWidth: MediaQuery.of(context).size.width / 2,
         footerHeight: 30.0,
         verticalIndicatorStrokeWidth: 3.0,

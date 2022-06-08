@@ -16,14 +16,14 @@ class Temperature extends StatefulWidget {
 }
 
 class _TemperatureState extends State<Temperature> {
-  late Future<TermostatModel> futureTermostat;
   late OpenHABController openHABController;
+  late Future<dynamic> isLoaded;
 
   @override
   void initState() {
     super.initState();
     openHABController = OpenHABController();
-    futureTermostat = openHABController.fetchTermostat();
+    isLoaded = openHABController.fetchTermostat();
   }
 
   bool termostatStatus = false;
@@ -77,8 +77,6 @@ class _TemperatureState extends State<Temperature> {
 
     final endHours = endTime.hour.toString().padLeft(2, '0');
     final endMinutes = endTime.minute.toString().padLeft(2, '0');
-
-    chartData = new ChartData(context);
 
     return Scaffold(
       appBar: AppBar(
@@ -164,7 +162,7 @@ class _TemperatureState extends State<Temperature> {
                         value: termostatStatus,
                         //padding: 8.0,
                         onToggle: (val) {
-                          openHABController.postIllumination();
+                          openHABController.toggleLamp(val);
                           setState(() {
                             termostatStatus = val;
                           });
@@ -328,50 +326,70 @@ class _TemperatureState extends State<Temperature> {
                 ),
               Text("Temperatura posljednja 24 sata"),
               Container(
-                width: MediaQuery.of(context).size.width - 20,
-                height: 300,
-                padding: const EdgeInsets.all(5),
-                child: BezierChart(
-                    bezierChartScale: BezierChartScale.HOURLY,
-                    bezierChartAggregation: BezierChartAggregation.AVERAGE,
-                    fromDate: chartData.todayBegin,
-                    toDate: chartData.todayEnd,
-                    config: chartData.bezierChartConfig,
-                    series: [
-                      BezierLine(
-                        lineColor: Colors.black,
-                        dataPointFillColor: Colors.black,
-                        onMissingValue: (dateTime) {
-                          return 0.0;
-                        },
-                        data: chartData.todayTemp,
-                      ),
-                    ]),
-              ),
+                  width: MediaQuery.of(context).size.width - 20,
+                  height: 300,
+                  padding: const EdgeInsets.all(5),
+                  child: FutureBuilder(
+                    future: isLoaded,
+                    builder: (context, snapshot) {
+                      if (snapshot.connectionState == ConnectionState.none &&
+                          snapshot.hasData) {
+                        return Container();
+                      }
+                      var chartData = openHABController.chartData;
+                      return BezierChart(
+                          bezierChartScale: BezierChartScale.HOURLY,
+                          bezierChartAggregation:
+                              BezierChartAggregation.AVERAGE,
+                          fromDate: chartData.todayBegin,
+                          toDate: chartData.todayEnd,
+                          config: chartData.getBezierChartConfig(context),
+                          series: [
+                            BezierLine(
+                              lineColor: Colors.black,
+                              dataPointFillColor: Colors.black,
+                              onMissingValue: (dateTime) {
+                                return 0.0;
+                              },
+                              data: chartData.todayTemp,
+                            ),
+                          ]);
+                    },
+                  )),
               Container(
                 height: 10,
               ),
               Text("Temperatura posljednjih 7 dana"),
               Container(
-                width: MediaQuery.of(context).size.width - 20,
-                height: 300,
-                padding: const EdgeInsets.all(5),
-                child: BezierChart(
-                    bezierChartScale: BezierChartScale.WEEKLY,
-                    bezierChartAggregation: BezierChartAggregation.AVERAGE,
-                    fromDate: chartData.weekBegin,
-                    toDate: chartData.todayEnd,
-                    config: chartData.bezierChartConfig,
-                    series: [
-                      BezierLine(
-                          lineColor: Colors.black,
-                          dataPointFillColor: Colors.black,
-                          onMissingValue: (dateTime) {
-                            return 0.0;
-                          },
-                          data: chartData.weeklyTemp),
-                    ]),
-              ),
+                  width: MediaQuery.of(context).size.width - 20,
+                  height: 300,
+                  padding: const EdgeInsets.all(5),
+                  child: FutureBuilder(
+                    future: isLoaded,
+                    builder: (context, snapshot) {
+                      if (snapshot.connectionState == ConnectionState.none &&
+                          snapshot.hasData) {
+                        return Container();
+                      }
+                      var chartData = openHABController.chartData;
+                      return BezierChart(
+                          bezierChartScale: BezierChartScale.WEEKLY,
+                          bezierChartAggregation:
+                              BezierChartAggregation.AVERAGE,
+                          fromDate: chartData.weekBegin,
+                          toDate: chartData.todayEnd,
+                          config: chartData.getBezierChartConfig(context),
+                          series: [
+                            BezierLine(
+                                lineColor: Colors.black,
+                                dataPointFillColor: Colors.black,
+                                onMissingValue: (dateTime) {
+                                  return 0.0;
+                                },
+                                data: chartData.weeklyTemp),
+                          ]);
+                    },
+                  )),
               Container(
                 height: 20,
               ),
