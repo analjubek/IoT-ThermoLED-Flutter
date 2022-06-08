@@ -68,10 +68,11 @@ class TermostatModel {
 }
 
 class LampColor {
-  final int r;
-  final int g;
-  final int b;
+  late int r;
+  late int g;
+  late int b;
 
+  LampColor.empty();
 
   LampColor({ required this.r, required this.g, required this.b});
 

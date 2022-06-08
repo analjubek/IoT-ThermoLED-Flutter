@@ -18,8 +18,8 @@ class OpenHABController {
   late String _lamp;
   late String _temperature;
   late String _brightness;
-  late ChartData chartData;
-  late LampColor lampColor;
+  late ChartData chartData = ChartData.empty();
+  late LampColor lampColor = LampColor.empty();
 
   factory OpenHABController() {
     return _openHABController;

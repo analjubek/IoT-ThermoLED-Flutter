@@ -26,6 +26,8 @@ class ChartData {
     ChartData();
   }
 
+  ChartData.empty();
+
   ChartData() {
     todayLight.add(new DataPoint(
         value: 60.0, xAxis: todayBegin.add(Duration(minutes: 30))));
