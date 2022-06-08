@@ -19,6 +19,7 @@ class OpenHABController {
   late String _temperature;
   late String _brightness;
   late ChartData chartData;
+  late LampColor lampColor;
 
   factory OpenHABController() {
     return _openHABController;
@@ -61,14 +62,15 @@ class OpenHABController {
     }
   }
 
-  Future<LampColor> fetchColor() async {
+  Future<dynamic> fetchColor() async {
     var url = Uri.parse(_lamp);
     var headers = _getGetHeaders();
     final response = await http.get(url, headers: headers);
 
     if (response.statusCode == 200) {
       print(response);
-      return LampColor.fromJson(jsonDecode(response.body));
+      lampColor = LampColor.fromJson(jsonDecode(response.body));
+      return Future.value(true);
     } else {
       print(response);
       throw Exception('Failed to fetch illumination color.');

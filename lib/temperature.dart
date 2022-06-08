@@ -23,7 +23,9 @@ class _TemperatureState extends State<Temperature> {
   void initState() {
     super.initState();
     openHABController = OpenHABController();
-    isLoaded = openHABController.fetchTermostat();
+    setState(() {
+      isLoaded = openHABController.fetchTermostat();
+    });
   }
 
   bool termostatStatus = false;

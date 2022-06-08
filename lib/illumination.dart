@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:bezier_chart/bezier_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_switch/flutter_switch.dart';
+import 'package:projekt/models.dart';
 import 'package:projekt/openhab_controller.dart';
 
 import 'chartdata.dart';
@@ -15,16 +16,21 @@ class Illumination extends StatefulWidget {
 class _IlluminationState extends State<Illumination> {
   bool illuminationStatus = true;
 
-  late Future<dynamic> isLoaded;
+  late Future<dynamic> isChartLoaded;
+  late Future<dynamic> isColorLoaded;
 
   late OpenHABController openHABController;
+
+  late LampColor lampColor;
 
   @override
   void initState() {
     super.initState();
     openHABController = OpenHABController();
-    openHABController.fetchColor();
-    isLoaded = openHABController.fetchIllumination();
+    setState(() {
+      isColorLoaded = openHABController.fetchColor();
+      isChartLoaded = openHABController.fetchIllumination();
+    });
   }
 
   @override
@@ -155,7 +161,7 @@ class _IlluminationState extends State<Illumination> {
                   height: 300,
                   padding: const EdgeInsets.all(5),
                   child: FutureBuilder(
-                      future: isLoaded,
+                      future: isChartLoaded,
                       builder: (context, snapshot) {
                         if (snapshot.connectionState == ConnectionState.none &&
                             snapshot.hasData) {
@@ -188,7 +194,7 @@ class _IlluminationState extends State<Illumination> {
                 height: 300,
                 padding: const EdgeInsets.all(5),
                 child: FutureBuilder(
-                  future: isLoaded,
+                  future: isChartLoaded,
                   builder: (context, snapshot) {
                     if (snapshot.connectionState == ConnectionState.none &&
                         snapshot.hasData) {
