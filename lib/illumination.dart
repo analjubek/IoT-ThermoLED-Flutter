@@ -27,7 +27,8 @@ class _IlluminationState extends State<Illumination> {
   void initState() {
     super.initState();
     openHABController = OpenHABController();
-    futureIllumination = openHABController.fetchIllumination();
+    // futureIllumination = openHABController.fetchIllumination();
+    openHABController.fetchColor();
   }
 
   @override
@@ -201,6 +202,9 @@ class _IlluminationState extends State<Illumination> {
                             data: chartData.weeklyLight),
                       ]),
                 ),
+              ),
+              Container(
+                height: 20,
               ),
             ],
           ),

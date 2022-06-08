@@ -26,7 +26,7 @@ class _TemperatureState extends State<Temperature> {
     futureTermostat = openHABController.fetchTermostat();
   }
 
-  bool termostatStatus = true;
+  bool termostatStatus = false;
 
   int _currentTemperature = 20;
   late NumberPicker temperaturePicker;
@@ -142,36 +142,37 @@ class _TemperatureState extends State<Temperature> {
                   ],
                 ),
               ),
-              Container(
-                color: Colors.grey[200],
-                height: 50,
-                child: Row(
-                  children: <Widget>[
-                    Container(
-                      width: MediaQuery.of(context).size.width - 80,
-                      padding: const EdgeInsets.all(10),
-                      child: Text(
-                        "Termostat uključen",
-                        style: TextStyle(fontSize: 16),
-                        textAlign: TextAlign.left,
+              if (termostatStatus)
+                Container(
+                  color: Colors.grey[200],
+                  height: 50,
+                  child: Row(
+                    children: <Widget>[
+                      Container(
+                        width: MediaQuery.of(context).size.width - 80,
+                        padding: const EdgeInsets.all(10),
+                        child: Text(
+                          "Termostat uključen",
+                          style: TextStyle(fontSize: 16),
+                          textAlign: TextAlign.left,
+                        ),
                       ),
-                    ),
-                    FlutterSwitch(
-                      //width: 125.0,
-                      height: 30.0,
-                      //toggleSize: 20.0,
-                      value: termostatStatus,
-                      //padding: 8.0,
-                      onToggle: (val) {
-                        openHABController.postIllumination();
-                        setState(() {
-                          termostatStatus = val;
-                        });
-                      },
-                    ),
-                  ],
+                      FlutterSwitch(
+                        //width: 125.0,
+                        height: 30.0,
+                        //toggleSize: 20.0,
+                        value: termostatStatus,
+                        //padding: 8.0,
+                        onToggle: (val) {
+                          openHABController.postIllumination();
+                          setState(() {
+                            termostatStatus = val;
+                          });
+                        },
+                      ),
+                    ],
+                  ),
                 ),
-              ),
               if (termostatStatus)
                 Container(
                   padding: const EdgeInsets.all(10),
@@ -325,9 +326,6 @@ class _TemperatureState extends State<Temperature> {
                     ),
                   ],
                 ),
-              Container(
-                height: 20,
-              ),
               Text("Temperatura posljednja 24 sata"),
               Container(
                 width: MediaQuery.of(context).size.width - 20,
@@ -341,12 +339,13 @@ class _TemperatureState extends State<Temperature> {
                     config: chartData.bezierChartConfig,
                     series: [
                       BezierLine(
-                          lineColor: Colors.black,
-                          dataPointFillColor: Colors.black,
-                          onMissingValue: (dateTime) {
-                            return 0.0;
-                          },
-                          data: chartData.todayTemp),
+                        lineColor: Colors.black,
+                        dataPointFillColor: Colors.black,
+                        onMissingValue: (dateTime) {
+                          return 0.0;
+                        },
+                        data: chartData.todayTemp,
+                      ),
                     ]),
               ),
               Container(
@@ -372,6 +371,9 @@ class _TemperatureState extends State<Temperature> {
                           },
                           data: chartData.weeklyTemp),
                     ]),
+              ),
+              Container(
+                height: 20,
               ),
             ],
           ),

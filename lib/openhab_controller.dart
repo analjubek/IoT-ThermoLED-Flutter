@@ -1,6 +1,6 @@
 import 'dart:convert';
 import 'dart:io';
-
+import 'package:html/parser.dart';
 import 'package:http/http.dart' as http;
 
 import 'models.dart';
@@ -15,6 +15,7 @@ class OpenHABController {
 
   late String _items;
   late String _lamp;
+  late String _color;
 
   factory OpenHABController() {
     return _openHABController;
@@ -23,6 +24,7 @@ class OpenHABController {
   OpenHABController._internal() {
     _items = "${baseUrl}items/";
     _lamp = "${_items}Huego1_Color";
+    _color = "${_items}Huego1_Color";
   }
 
   // radi
@@ -49,6 +51,23 @@ class OpenHABController {
       return IlluminationModel.fromJson(jsonDecode(response.body));
     } else {
       throw Exception('Failed to load illumination');
+    }
+  }
+
+  Future<String> fetchColor() async {
+    var url = Uri.parse(_lamp);
+    var headers = _getGetHeaders();
+    final response = await http.get(url, headers: headers);
+
+    if (response.statusCode == 200) {
+      var document = parse(response.body);
+      var metas = document.getElementsByTagName("meta");
+      print(response.body);
+      print(document);
+      print(metas);
+      return "";
+    } else {
+      throw Exception('Failed to fetch illumination color.');
     }
   }
 

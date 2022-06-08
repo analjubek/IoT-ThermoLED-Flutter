@@ -104,9 +104,9 @@ class ChartData {
         backgroundColor: Colors.grey[200],
         bubbleIndicatorColor: Colors.blue,
         displayYAxis: true,
-        stepsYAxis: 2,
+        stepsYAxis: 10,
         startYAxisFromNonZeroValue: true,
-        bubbleIndicatorValueFormat: NumberFormat("#####", "en_US"),
+        //bubbleIndicatorValueFormat: NumberFormat("#####", "en_US"),
         bubbleIndicatorValueStyle:
             TextStyle(color: Colors.blue, fontSize: 15.0),
         bubbleIndicatorLabelStyle: TextStyle(color: Colors.blue),

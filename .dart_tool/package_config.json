@@ -140,6 +140,12 @@
       "languageVersion": "2.14"
     },
     {
+      "name": "csslib",
+      "rootUri": "file:///Users/analjubek/FlutterDev/flutter/.pub-cache/hosted/pub.dartlang.org/csslib-0.16.2",
+      "packageUri": "lib/",
+      "languageVersion": "2.2"
+    },
+    {
       "name": "cupertino_icons",
       "rootUri": "file:///Users/analjubek/FlutterDev/flutter/.pub-cache/hosted/pub.dartlang.org/cupertino_icons-1.0.5",
       "packageUri": "lib/",
@@ -252,6 +258,12 @@
       "rootUri": "file:///Users/analjubek/FlutterDev/flutter/.pub-cache/hosted/pub.dartlang.org/graphs-0.2.0",
       "packageUri": "lib/",
       "languageVersion": "2.0"
+    },
+    {
+      "name": "html",
+      "rootUri": "file:///Users/analjubek/FlutterDev/flutter/.pub-cache/hosted/pub.dartlang.org/html-0.14.0+3",
+      "packageUri": "lib/",
+      "languageVersion": "2.3"
     },
     {
       "name": "http",
@@ -596,7 +608,7 @@
       "languageVersion": "2.17"
     }
   ],
-  "generated": "2022-06-06T20:26:28.504133Z",
+  "generated": "2022-06-08T16:22:08.203511Z",
   "generator": "pub",
   "generatorVersion": "2.17.1"
 }
