@@ -2,12 +2,14 @@ import 'package:bezier_chart/bezier_chart.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:projekt/list_measurement.dart';
 
+import 'measurement.dart';
 import 'models.dart';
 
 class ChartData {
   String currentLight = "90";
-  double currentTemp = 25.0;
+  String currentTemp = "25.0";
 
   List<DataPoint<DateTime>> todayLight = [];
   List<DataPoint<DateTime>> todayTemp = [];
@@ -15,17 +17,37 @@ class ChartData {
   List<DataPoint<DateTime>> weeklyLight = [];
   List<DataPoint<DateTime>> weeklyTemp = [];
 
+  List<DataPoint<DateTime>> todayChart = [];
+  List<DataPoint<DateTime>> weekChart = [];
+
   DateTime todayBegin = DateTime.now().subtract(Duration(days: 1));
   DateTime weekBegin = DateTime.now().subtract(Duration(days: 7));
   DateTime todayEnd = DateTime.now();
 
-  ChartData.chartDataWithTemp(TermostatModel termostatModel) {
+  ChartData.chartDataWithTemp(Map<String, dynamic> json) {
+    currentTemp = json['state'];
+    print("FETCH " + json['state']);
+    print("FETCH " + currentTemp);
     ChartData();
+    print("FETCH " + currentTemp);
   }
 
   ChartData.chartDataWithLight(IlluminationModel illuminationModel) {
     currentLight = illuminationModel.state!;
     ChartData();
+  }
+
+  ChartData.chartDataWithChart(ListMeasurement listMeasurement) {
+    for (Measurement measurement in listMeasurement.measurements) {
+      if (measurement.time > todayBegin.millisecondsSinceEpoch) {
+        todayChart.add(new DataPoint(
+            value: double.parse(measurement.state),
+            xAxis: DateTime.fromMillisecondsSinceEpoch(measurement.time)));
+      }
+      weekChart.add(new DataPoint(
+          value: double.parse(measurement.state),
+          xAxis: DateTime.fromMillisecondsSinceEpoch(measurement.time)));
+    }
   }
 
   ChartData.empty();
@@ -134,7 +156,7 @@ class ChartData {
         backgroundColor: Colors.grey[200],
         bubbleIndicatorColor: Colors.blue,
         displayYAxis: true,
-        stepsYAxis: 10,
+        stepsYAxis: 500,
         startYAxisFromNonZeroValue: true,
         bubbleIndicatorValueFormat: NumberFormat("##.#", "en_US"),
         bubbleIndicatorValueStyle:

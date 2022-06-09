@@ -3,7 +3,9 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:html/parser.dart';
 import 'package:http/http.dart' as http;
+import 'package:intl/intl.dart';
 import 'package:projekt/chartdata.dart';
+import 'package:projekt/list_measurement.dart';
 
 import 'models.dart';
 
@@ -19,8 +21,13 @@ class OpenHABController {
   late String _lamp;
   late String _temperature;
   late String _brightness;
+  late String _tempChart;
+  late String _lightChart;
   late ChartData chartData = ChartData.empty();
   late LampColor lampColor = LampColor.empty();
+
+  DateTime weekBegin = DateTime.now().subtract(Duration(days: 7));
+  DateTime todayEnd = DateTime.now();
 
   factory OpenHABController() {
     return _openHABController;
@@ -31,6 +38,10 @@ class OpenHABController {
     _lamp = "${_items}Huego1_Color";
     _temperature = "${_items}TemperatureSensor_TemperatureSensor";
     _brightness = "${_items}BrightnessSensor_BrightnessValue";
+    _tempChart =
+        "${baseUrl}persistence/items/TemperatureSensor_TemperatureSensor";
+    _lightChart =
+        "${baseUrl}persistence/items/BrightnessSensor_BrightnessValue";
   }
 
   void toggleLamp(bool turnOn) async {
@@ -109,13 +120,78 @@ class OpenHABController {
     final response = await http.get(url, headers: headers);
 
     if (response.statusCode == 200) {
-      print(response);
-      var temperature = TermostatModel.fromJson(jsonDecode(response.body));
-      chartData = ChartData.chartDataWithTemp(temperature);
+      print("FETCH " + response.body);
+      chartData = ChartData.chartDataWithTemp(jsonDecode(response.body));
       return Future.value(true);
     } else {
-      print(response);
+      print(response.body);
       throw Exception('Failed to load illumination');
+    }
+  }
+
+  Future<ChartData> fetchLightChart() async {
+    final DateFormat dateformatter = DateFormat('yyyy-MM-dd');
+    final DateFormat timeformatter = DateFormat('hh:mm:ss');
+    var begin = dateformatter.format(weekBegin) +
+        "T" +
+        timeformatter.format(weekBegin) +
+        "Z";
+    var end = dateformatter.format(todayEnd) +
+        "T" +
+        timeformatter.format(todayEnd) +
+        "Z";
+
+    print("BASE " + begin);
+    print("BASE " + end);
+
+    var base = _lightChart + "?starttime=" + begin + "&endttime=" + end;
+    print("BASE " + base);
+
+    var url = Uri.parse(base);
+    var headers = _getGetHeaders();
+    final response = await http.get(url, headers: headers);
+
+    if (response.statusCode == 200) {
+      print(response.body);
+      var listMeasurements =
+          ListMeasurement.fromJson(jsonDecode(response.body));
+      return ChartData.chartDataWithChart(listMeasurements);
+    } else {
+      print(response);
+      throw Exception('Failed to fetch illumination color.');
+    }
+  }
+
+  Future<ChartData> fetchTempChart() async {
+    final DateFormat dateformatter = DateFormat('yyyy-MM-dd');
+    final DateFormat timeformatter = DateFormat('hh:mm:ss');
+    var begin = dateformatter.format(weekBegin) +
+        "T" +
+        timeformatter.format(weekBegin) +
+        "Z";
+    var end = dateformatter.format(todayEnd) +
+        "T" +
+        timeformatter.format(todayEnd) +
+        "Z";
+
+    print("BASE " + begin);
+    print("BASE " + end);
+
+    var base = _tempChart + "?starttime=" + begin + "&endttime=" + end;
+    print("BASE " + base);
+
+    var url = Uri.parse(base);
+    var headers = _getGetHeaders();
+    final response = await http.get(url, headers: headers);
+
+    if (response.statusCode == 200) {
+      print(response.body);
+      var listMeasurements =
+          ListMeasurement.fromJson(jsonDecode(response.body));
+      return ChartData.chartDataWithChart(listMeasurements);
+    } else {
+      print(response);
+      throw Exception('Failed to fetch illumination color.');
     }
   }
 

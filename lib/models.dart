@@ -1,4 +1,7 @@
+import 'dart:ffi';
+
 import 'package:date_format/date_format.dart';
+import 'package:json_annotation/json_annotation.dart';
 
 class IlluminationModel {
   String? link;

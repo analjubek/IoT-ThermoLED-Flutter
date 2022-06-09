@@ -18,15 +18,28 @@ class Temperature extends StatefulWidget {
 class _TemperatureState extends State<Temperature> {
   late OpenHABController openHABController;
   late Future<dynamic> isLoaded;
+  late Future<dynamic> isChartLoaded;
   late ChartData chartData = ChartData();
+  late ChartData tempChart = ChartData();
 
   @override
   void initState() {
     super.initState();
     openHABController = OpenHABController();
     setState(() {
-      isLoaded = openHABController.fetchTermostat();
+      isLoaded = getCurrentTemp();
+      isChartLoaded = getTempChartData(context);
     });
+  }
+
+  getCurrentTemp() async {
+    chartData = await openHABController.fetchTermostat();
+    return Future.value(true);
+  }
+
+  getTempChartData(BuildContext context) async {
+    tempChart = await openHABController.fetchTempChart();
+    return Future.value(true);
   }
 
   bool termostatStatus = false;
@@ -132,11 +145,24 @@ class _TemperatureState extends State<Temperature> {
                           return const CircularProgressIndicator();
                         },
                       ),*/
-                          Text(
-                        "27°C",
-                        style: TextStyle(fontSize: 50),
-                        textAlign: TextAlign.center,
-                      ),
+                          FutureBuilder(
+                              future: isLoaded,
+                              builder: (context, snapshot) {
+                                if (snapshot.connectionState ==
+                                        ConnectionState.none &&
+                                    snapshot.hasData) {
+                                  return Text(
+                                    "2",
+                                    style: TextStyle(fontSize: 50),
+                                    textAlign: TextAlign.center,
+                                  );
+                                }
+                                return Text(
+                                  chartData.currentTemp,
+                                  style: TextStyle(fontSize: 50),
+                                  textAlign: TextAlign.center,
+                                );
+                              }),
                     ),
                   ],
                 ),
@@ -331,7 +357,7 @@ class _TemperatureState extends State<Temperature> {
                   height: 300,
                   padding: const EdgeInsets.all(5),
                   child: FutureBuilder(
-                    future: isLoaded,
+                    future: isChartLoaded,
                     builder: (context, snapshot) {
                       if (snapshot.connectionState == ConnectionState.none &&
                           snapshot.hasData) {
@@ -341,9 +367,9 @@ class _TemperatureState extends State<Temperature> {
                           bezierChartScale: BezierChartScale.HOURLY,
                           bezierChartAggregation:
                               BezierChartAggregation.AVERAGE,
-                          fromDate: chartData.todayBegin,
-                          toDate: chartData.todayEnd,
-                          config: chartData.getBezierChartConfig(context),
+                          fromDate: tempChart.todayBegin,
+                          toDate: tempChart.todayEnd,
+                          config: tempChart.getBezierChartConfig(context),
                           series: [
                             BezierLine(
                               lineColor: Colors.black,
@@ -351,7 +377,7 @@ class _TemperatureState extends State<Temperature> {
                               onMissingValue: (dateTime) {
                                 return 0.0;
                               },
-                              data: chartData.todayTemp,
+                              data: tempChart.todayChart,
                             ),
                           ]);
                     },
@@ -365,7 +391,7 @@ class _TemperatureState extends State<Temperature> {
                   height: 300,
                   padding: const EdgeInsets.all(5),
                   child: FutureBuilder(
-                    future: isLoaded,
+                    future: isChartLoaded,
                     builder: (context, snapshot) {
                       if (snapshot.connectionState == ConnectionState.none &&
                           snapshot.hasData) {
@@ -375,9 +401,9 @@ class _TemperatureState extends State<Temperature> {
                           bezierChartScale: BezierChartScale.WEEKLY,
                           bezierChartAggregation:
                               BezierChartAggregation.AVERAGE,
-                          fromDate: chartData.weekBegin,
-                          toDate: chartData.todayEnd,
-                          config: chartData.getBezierChartConfig(context),
+                          fromDate: tempChart.weekBegin,
+                          toDate: tempChart.todayEnd,
+                          config: tempChart.getBezierChartConfig(context),
                           series: [
                             BezierLine(
                                 lineColor: Colors.black,
@@ -385,7 +411,7 @@ class _TemperatureState extends State<Temperature> {
                                 onMissingValue: (dateTime) {
                                   return 0.0;
                                 },
-                                data: chartData.weeklyTemp),
+                                data: tempChart.weekChart),
                           ]);
                     },
                   )),
