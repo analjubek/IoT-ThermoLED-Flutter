@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'dart:io';
+import 'package:flutter/material.dart';
 import 'package:html/parser.dart';
 import 'package:http/http.dart' as http;
 import 'package:projekt/chartdata.dart';
@@ -46,31 +47,35 @@ class OpenHABController {
     print(res.body);
   }
 
-  Future<dynamic> fetchIllumination() async {
+  Future<ChartData> fetchIllumination() async {
     var url = Uri.parse(_brightness);
     var headers = _getGetHeaders();
     final response = await http.get(url, headers: headers);
 
     if (response.statusCode == 200) {
-      print(response);
+      print(response.body);
       var illumination = IlluminationModel.fromJson(jsonDecode(response.body));
-      chartData = ChartData.chartDataWithLight(illumination);
-      return Future.value(true);
+      return ChartData.chartDataWithLight(illumination);
     } else {
-      print(response);
+      print(response.body);
       throw Exception('Failed to load illumination');
     }
   }
 
-  Future<dynamic> fetchColor() async {
+  Future<Color> fetchColor() async {
     var url = Uri.parse(_lamp);
     var headers = _getGetHeaders();
     final response = await http.get(url, headers: headers);
 
     if (response.statusCode == 200) {
-      print(response);
+      print(response.body);
       lampColor = LampColor.fromJson(jsonDecode(response.body));
-      return Future.value(true);
+      HSVColor hsvColor = HSVColor.fromAHSV(0.5, lampColor.r.toDouble(),
+          lampColor.g.toDouble() / 100, lampColor.b.toDouble() / 100);
+      print("hsv color" + hsvColor.toString());
+      Color color = hsvColor.toColor();
+      print("color " + color.toString());
+      return color;
     } else {
       print(response);
       throw Exception('Failed to fetch illumination color.');

@@ -1,11 +1,12 @@
 import 'package:bezier_chart/bezier_chart.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 
 import 'models.dart';
 
 class ChartData {
-  double currentLight = 90;
+  String currentLight = "90";
   double currentTemp = 25.0;
 
   List<DataPoint<DateTime>> todayLight = [];
@@ -23,6 +24,7 @@ class ChartData {
   }
 
   ChartData.chartDataWithLight(IlluminationModel illuminationModel) {
+    currentLight = illuminationModel.state!;
     ChartData();
   }
 
@@ -47,6 +49,20 @@ class ChartData {
         value: 81.0, xAxis: todayBegin.add(Duration(minutes: 240))));
     todayLight.add(new DataPoint(
         value: 74.0, xAxis: todayBegin.add(Duration(minutes: 270))));
+    todayLight.add(new DataPoint(
+        value: 60.0, xAxis: todayBegin.add(Duration(minutes: 350))));
+    todayLight.add(new DataPoint(
+        value: 50.0, xAxis: todayBegin.add(Duration(minutes: 380))));
+    todayLight.add(new DataPoint(
+        value: 20.0, xAxis: todayBegin.add(Duration(minutes: 500))));
+    todayLight.add(new DataPoint(
+        value: 70.0, xAxis: todayBegin.add(Duration(minutes: 1240))));
+    todayLight.add(new DataPoint(
+        value: 90.0, xAxis: todayBegin.add(Duration(minutes: 1600))));
+    todayLight.add(new DataPoint(
+        value: 90.0, xAxis: todayBegin.add(Duration(minutes: 1700))));
+    todayLight.add(new DataPoint(
+        value: 90.0, xAxis: todayBegin.add(Duration(minutes: 1880))));
 
     todayTemp.add(new DataPoint(
         value: 19.0, xAxis: todayBegin.add(Duration(minutes: 30))));
@@ -111,7 +127,7 @@ class ChartData {
         contentWidth: MediaQuery.of(context).size.width / 2,
         footerHeight: 30.0,
         verticalIndicatorStrokeWidth: 3.0,
-        verticalIndicatorColor: Colors.black26,
+        verticalIndicatorColor: Colors.lightBlue,
         showVerticalIndicator: true,
         verticalIndicatorFixedPosition: true,
         snap: false,
@@ -120,12 +136,12 @@ class ChartData {
         displayYAxis: true,
         stepsYAxis: 10,
         startYAxisFromNonZeroValue: true,
-        //bubbleIndicatorValueFormat: NumberFormat("#####", "en_US"),
+        bubbleIndicatorValueFormat: NumberFormat("##.#", "en_US"),
         bubbleIndicatorValueStyle:
-            TextStyle(color: Colors.blue, fontSize: 15.0),
-        bubbleIndicatorLabelStyle: TextStyle(color: Colors.blue),
+            TextStyle(color: Colors.white, fontSize: 15.0),
+        bubbleIndicatorLabelStyle: TextStyle(color: Colors.white),
         bubbleIndicatorTitleStyle:
-            TextStyle(color: Colors.blue, fontSize: 15.0),
+            TextStyle(color: Colors.white, fontSize: 15.0),
         xAxisTextStyle: TextStyle(color: Colors.blue, fontSize: 10.0),
         yAxisTextStyle: TextStyle(color: Colors.blue, fontSize: 10.0));
   }

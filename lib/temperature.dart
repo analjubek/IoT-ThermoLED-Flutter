@@ -18,6 +18,7 @@ class Temperature extends StatefulWidget {
 class _TemperatureState extends State<Temperature> {
   late OpenHABController openHABController;
   late Future<dynamic> isLoaded;
+  late ChartData chartData = ChartData();
 
   @override
   void initState() {
@@ -69,8 +70,6 @@ class _TemperatureState extends State<Temperature> {
 
   TimeOfDay startTime = TimeOfDay(hour: 15, minute: 00);
   TimeOfDay endTime = TimeOfDay(hour: 22, minute: 30);
-
-  late ChartData chartData;
 
   @override
   Widget build(BuildContext context) {
@@ -338,7 +337,6 @@ class _TemperatureState extends State<Temperature> {
                           snapshot.hasData) {
                         return Container();
                       }
-                      var chartData = openHABController.chartData;
                       return BezierChart(
                           bezierChartScale: BezierChartScale.HOURLY,
                           bezierChartAggregation:
@@ -373,7 +371,6 @@ class _TemperatureState extends State<Temperature> {
                           snapshot.hasData) {
                         return Container();
                       }
-                      var chartData = openHABController.chartData;
                       return BezierChart(
                           bezierChartScale: BezierChartScale.WEEKLY,
                           bezierChartAggregation:

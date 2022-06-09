@@ -128,6 +128,12 @@
       "languageVersion": "2.12"
     },
     {
+      "name": "color_models",
+      "rootUri": "file:///Users/analjubek/FlutterDev/flutter/.pub-cache/hosted/pub.dartlang.org/color_models-1.3.0",
+      "packageUri": "lib/",
+      "languageVersion": "2.12"
+    },
+    {
       "name": "convert",
       "rootUri": "file:///Users/analjubek/FlutterDev/flutter/.pub-cache/hosted/pub.dartlang.org/convert-2.1.1",
       "packageUri": "lib/",
@@ -196,6 +202,12 @@
     {
       "name": "flutter",
       "rootUri": "file:///Users/analjubek/FlutterDev/flutter/packages/flutter",
+      "packageUri": "lib/",
+      "languageVersion": "2.12"
+    },
+    {
+      "name": "flutter_color_models",
+      "rootUri": "file:///Users/analjubek/FlutterDev/flutter/.pub-cache/hosted/pub.dartlang.org/flutter_color_models-1.3.0",
       "packageUri": "lib/",
       "languageVersion": "2.12"
     },
@@ -356,6 +368,12 @@
       "languageVersion": "2.12"
     },
     {
+      "name": "num_utilities",
+      "rootUri": "file:///Users/analjubek/FlutterDev/flutter/.pub-cache/hosted/pub.dartlang.org/num_utilities-1.0.2+1",
+      "packageUri": "lib/",
+      "languageVersion": "2.12"
+    },
+    {
       "name": "numberpicker",
       "rootUri": "file:///Users/analjubek/FlutterDev/flutter/.pub-cache/hosted/pub.dartlang.org/numberpicker-2.1.1",
       "packageUri": "lib/",
@@ -454,6 +472,12 @@
     {
       "name": "pool",
       "rootUri": "file:///Users/analjubek/FlutterDev/flutter/.pub-cache/hosted/pub.dartlang.org/pool-1.5.0",
+      "packageUri": "lib/",
+      "languageVersion": "2.12"
+    },
+    {
+      "name": "powers",
+      "rootUri": "file:///Users/analjubek/FlutterDev/flutter/.pub-cache/hosted/pub.dartlang.org/powers-1.0.0+2",
       "packageUri": "lib/",
       "languageVersion": "2.12"
     },
@@ -608,7 +632,7 @@
       "languageVersion": "2.17"
     }
   ],
-  "generated": "2022-06-08T16:22:08.203511Z",
+  "generated": "2022-06-09T13:35:13.235377Z",
   "generator": "pub",
   "generatorVersion": "2.17.1"
 }

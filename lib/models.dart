@@ -1,3 +1,5 @@
+import 'package:date_format/date_format.dart';
+
 class IlluminationModel {
   String? link;
   String? state;
@@ -9,15 +11,16 @@ class IlluminationModel {
   List<String>? tags;
   List<String>? groupNames;
 
-  IlluminationModel({this.link,
-    this.state,
-    this.editable,
-    this.type,
-    this.name,
-    this.label,
-    this.category,
-    this.tags,
-    this.groupNames});
+  IlluminationModel(
+      {this.link,
+      this.state,
+      this.editable,
+      this.type,
+      this.name,
+      this.label,
+      this.category,
+      this.tags,
+      this.groupNames});
 
   IlluminationModel.fromJson(Map<String, dynamic> json) {
     link = json['link'];
@@ -46,7 +49,6 @@ class IlluminationModel {
   }
 }
 
-
 class TermostatModel {
   final int userId;
   final int id;
@@ -74,10 +76,13 @@ class LampColor {
 
   LampColor.empty();
 
-  LampColor({ required this.r, required this.g, required this.b});
+  LampColor({required this.r, required this.g, required this.b});
 
   factory LampColor.fromJson(Map<String, dynamic> json) {
     String state = json['state'];
+    print("STATE " + state);
+    print(int.parse(state.split(',')[0]));
+
     return LampColor(
       r: int.parse(state.split(',')[0]),
       g: int.parse(state.split(',')[1]),

@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_switch/flutter_switch.dart';
 import 'package:projekt/models.dart';
 import 'package:projekt/openhab_controller.dart';
+import 'package:flutter_color_models/flutter_color_models.dart';
 
 import 'chartdata.dart';
 
@@ -21,20 +22,34 @@ class _IlluminationState extends State<Illumination> {
 
   late OpenHABController openHABController;
 
-  late LampColor lampColor;
+  late Color lampColor = Colors.white;
+
+  late ChartData chartData = ChartData();
 
   @override
   void initState() {
     super.initState();
     openHABController = OpenHABController();
     setState(() {
-      isColorLoaded = openHABController.fetchColor();
-      isChartLoaded = openHABController.fetchIllumination();
+      isColorLoaded = getLampColor();
+      isChartLoaded = getChartData(context);
     });
+  }
+
+  getChartData(BuildContext context) async {
+    chartData = await openHABController.fetchIllumination();
+    return Future.value(true);
+  }
+
+  getLampColor() async {
+    lampColor = await openHABController.fetchColor();
+    return Future.value(true);
   }
 
   @override
   Widget build(BuildContext context) {
+    print(chartData.todayLight);
+
     return Scaffold(
       appBar: AppBar(
           title: const Text('Osvjetljenje'),
@@ -98,16 +113,36 @@ class _IlluminationState extends State<Illumination> {
                           height: 50,
                           padding: const EdgeInsets.only(
                               top: 5, bottom: 5, left: 25, right: 25),
-                          child: Container(
-                            decoration: new BoxDecoration(
-                              color: Colors.orangeAccent,
-                              borderRadius: new BorderRadius.only(
-                                topLeft: const Radius.circular(10.0),
-                                topRight: const Radius.circular(10.0),
-                                bottomLeft: const Radius.circular(10.0),
-                                bottomRight: const Radius.circular(10.0),
-                              ),
-                            ),
+                          child: FutureBuilder(
+                            future: isChartLoaded,
+                            builder: (context, snapshot) {
+                              if (snapshot.connectionState ==
+                                      ConnectionState.none &&
+                                  snapshot.hasData) {
+                                return Container(
+                                  decoration: new BoxDecoration(
+                                    color: Colors.white,
+                                    borderRadius: new BorderRadius.only(
+                                      topLeft: const Radius.circular(10.0),
+                                      topRight: const Radius.circular(10.0),
+                                      bottomLeft: const Radius.circular(10.0),
+                                      bottomRight: const Radius.circular(10.0),
+                                    ),
+                                  ),
+                                );
+                              }
+                              return Container(
+                                decoration: new BoxDecoration(
+                                  color: lampColor,
+                                  borderRadius: new BorderRadius.only(
+                                    topLeft: const Radius.circular(10.0),
+                                    topRight: const Radius.circular(10.0),
+                                    bottomLeft: const Radius.circular(10.0),
+                                    bottomRight: const Radius.circular(10.0),
+                                  ),
+                                ),
+                              );
+                            },
                           ),
                         ),
                       ],
@@ -124,9 +159,9 @@ class _IlluminationState extends State<Illumination> {
                           ),
                         ),
                         Container(
-                          width: MediaQuery.of(context).size.width / 2,
-                          padding: const EdgeInsets.all(5),
-                          child: /*FutureBuilder<IlluminationModel>(
+                            width: MediaQuery.of(context).size.width / 2,
+                            padding: const EdgeInsets.all(5),
+                            child: /*FutureBuilder<IlluminationModel>(
                           future: futureIllumination,
                           builder: (context, snapshot) {
                             if (snapshot.hasData) {
@@ -142,12 +177,24 @@ class _IlluminationState extends State<Illumination> {
                             return const CircularProgressIndicator();
                           },
                         ),*/
-                              Text(
-                            "90 %",
-                            style: TextStyle(fontSize: 40),
-                            textAlign: TextAlign.center,
-                          ),
-                        ),
+                                FutureBuilder(
+                                    future: isChartLoaded,
+                                    builder: (context, snapshot) {
+                                      if (snapshot.connectionState ==
+                                              ConnectionState.none &&
+                                          snapshot.hasData) {
+                                        return Text(
+                                          "90",
+                                          style: TextStyle(fontSize: 40),
+                                          textAlign: TextAlign.center,
+                                        );
+                                      }
+                                      return Text(
+                                        chartData.currentLight,
+                                        style: TextStyle(fontSize: 40),
+                                        textAlign: TextAlign.center,
+                                      );
+                                    })),
                       ],
                     ),
                   ],
@@ -167,7 +214,7 @@ class _IlluminationState extends State<Illumination> {
                             snapshot.hasData) {
                           return Container();
                         }
-                        var chartData = openHABController.chartData;
+                        //var chartData = openHABController.chartData;
                         return BezierChart(
                             bezierChartScale: BezierChartScale.HOURLY,
                             bezierChartAggregation:
@@ -200,7 +247,7 @@ class _IlluminationState extends State<Illumination> {
                         snapshot.hasData) {
                       return Container();
                     }
-                    var chartData = openHABController.chartData;
+                    //var chartData = openHABController.chartData;
                     return BezierChart(
                         bezierChartScale: BezierChartScale.WEEKLY,
                         bezierChartAggregation: BezierChartAggregation.AVERAGE,
