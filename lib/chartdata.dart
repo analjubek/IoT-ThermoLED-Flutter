@@ -9,7 +9,7 @@ import 'models.dart';
 
 class ChartData {
   String currentLight = "90";
-  String currentTemp = "25.0";
+  String currentTemp = "25.0°C";
 
   List<DataPoint<DateTime>> todayLight = [];
   List<DataPoint<DateTime>> todayTemp = [];
@@ -25,7 +25,7 @@ class ChartData {
   DateTime todayEnd = DateTime.now();
 
   ChartData.chartDataWithTemp(Map<String, dynamic> json) {
-    currentTemp = json['state'];
+    currentTemp = json['state'] + "°C";
     print("FETCH " + json['state']);
     print("FETCH " + currentTemp);
     ChartData();
@@ -141,6 +141,58 @@ class ChartData {
     weeklyLight.add(
         new DataPoint(value: 81.0, xAxis: todayBegin.add(Duration(hours: 96))));
     weeklyLight.add(new DataPoint(
+        value: 74.0, xAxis: todayBegin.add(Duration(hours: 108))));
+
+    todayChart.add(new DataPoint(
+        value: 60.0, xAxis: todayBegin.add(Duration(minutes: 30))));
+    todayChart.add(new DataPoint(
+        value: 62.0, xAxis: todayBegin.add(Duration(minutes: 60))));
+    todayChart.add(new DataPoint(
+        value: 53.0, xAxis: todayBegin.add(Duration(minutes: 90))));
+    todayChart.add(new DataPoint(
+        value: 70.0, xAxis: todayBegin.add(Duration(minutes: 120))));
+    todayChart.add(new DataPoint(
+        value: 80.0, xAxis: todayBegin.add(Duration(minutes: 150))));
+    todayChart.add(new DataPoint(
+        value: 90.0, xAxis: todayBegin.add(Duration(minutes: 180))));
+    todayChart.add(new DataPoint(
+        value: 80.0, xAxis: todayBegin.add(Duration(minutes: 210))));
+    todayChart.add(new DataPoint(
+        value: 81.0, xAxis: todayBegin.add(Duration(minutes: 240))));
+    todayChart.add(new DataPoint(
+        value: 74.0, xAxis: todayBegin.add(Duration(minutes: 270))));
+    todayChart.add(new DataPoint(
+        value: 60.0, xAxis: todayBegin.add(Duration(minutes: 350))));
+    todayChart.add(new DataPoint(
+        value: 50.0, xAxis: todayBegin.add(Duration(minutes: 380))));
+    todayChart.add(new DataPoint(
+        value: 20.0, xAxis: todayBegin.add(Duration(minutes: 500))));
+    todayChart.add(new DataPoint(
+        value: 70.0, xAxis: todayBegin.add(Duration(minutes: 1240))));
+    todayChart.add(new DataPoint(
+        value: 90.0, xAxis: todayBegin.add(Duration(minutes: 1600))));
+    todayChart.add(new DataPoint(
+        value: 90.0, xAxis: todayBegin.add(Duration(minutes: 1700))));
+    todayChart.add(new DataPoint(
+        value: 90.0, xAxis: todayBegin.add(Duration(minutes: 1880))));
+
+    weekChart.add(
+        new DataPoint(value: 60.0, xAxis: todayBegin.add(Duration(hours: 12))));
+    weekChart.add(
+        new DataPoint(value: 62.0, xAxis: todayBegin.add(Duration(hours: 24))));
+    weekChart.add(
+        new DataPoint(value: 53.0, xAxis: todayBegin.add(Duration(hours: 36))));
+    weekChart.add(
+        new DataPoint(value: 70.0, xAxis: todayBegin.add(Duration(hours: 48))));
+    weekChart.add(
+        new DataPoint(value: 80.0, xAxis: todayBegin.add(Duration(hours: 60))));
+    weekChart.add(
+        new DataPoint(value: 90.0, xAxis: todayBegin.add(Duration(hours: 72))));
+    weekChart.add(
+        new DataPoint(value: 80.0, xAxis: todayBegin.add(Duration(hours: 84))));
+    weekChart.add(
+        new DataPoint(value: 81.0, xAxis: todayBegin.add(Duration(hours: 96))));
+    weekChart.add(new DataPoint(
         value: 74.0, xAxis: todayBegin.add(Duration(hours: 108))));
   }
 

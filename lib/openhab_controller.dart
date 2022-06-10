@@ -53,7 +53,7 @@ class OpenHABController {
     var res = await http.post(url, headers: headers, body: data);
     if (res.statusCode != 200) {
       print(res);
-      throw Exception('http.post error: statusCode= ${res.statusCode}');
+      print('http.post error: statusCode= ${res.statusCode}');
     }
     print(res.body);
   }
@@ -69,7 +69,8 @@ class OpenHABController {
       return ChartData.chartDataWithLight(illumination);
     } else {
       print(response.body);
-      throw Exception('Failed to load illumination');
+      print('Failed to load illumination');
+      return ChartData();
     }
   }
 
@@ -89,7 +90,8 @@ class OpenHABController {
       return color;
     } else {
       print(response);
-      throw Exception('Failed to fetch illumination color.');
+      print('Failed to fetch illumination color.');
+      return Colors.white;
     }
   }
 
@@ -109,7 +111,8 @@ class OpenHABController {
     if (response.statusCode == 201) {
       return TermostatModel.fromJson(jsonDecode(response.body));
     } else {
-      throw Exception('Failed to change termostat.');
+      print('Failed to change termostat.');
+      return TermostatModel(userId: 1, id: 1, title: "i");
     }
   }
 
@@ -125,7 +128,8 @@ class OpenHABController {
       return chartData;
     } else {
       print(response.body);
-      throw Exception('Failed to load illumination');
+      print('Failed to load illumination');
+      return ChartData();
     }
   }
 
@@ -158,7 +162,8 @@ class OpenHABController {
       return ChartData.chartDataWithChart(listMeasurements);
     } else {
       print(response);
-      throw Exception('Failed to fetch illumination color.');
+      print('Failed to fetch illumination color.');
+      return ChartData();
     }
   }
 
@@ -191,7 +196,8 @@ class OpenHABController {
       return ChartData.chartDataWithChart(listMeasurements);
     } else {
       print(response);
-      throw Exception('Failed to fetch illumination color.');
+      print('Failed to fetch illumination color.');
+      return ChartData();
     }
   }
 
