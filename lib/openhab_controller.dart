@@ -114,7 +114,7 @@ class OpenHABController {
   }
 
   // promijenit
-  Future<dynamic> fetchTermostat() async {
+  Future<ChartData> fetchTermostat() async {
     var url = Uri.parse(_temperature);
     var headers = _getGetHeaders();
     final response = await http.get(url, headers: headers);
@@ -122,7 +122,7 @@ class OpenHABController {
     if (response.statusCode == 200) {
       print("FETCH " + response.body);
       chartData = ChartData.chartDataWithTemp(jsonDecode(response.body));
-      return Future.value(true);
+      return chartData;
     } else {
       print(response.body);
       throw Exception('Failed to load illumination');
